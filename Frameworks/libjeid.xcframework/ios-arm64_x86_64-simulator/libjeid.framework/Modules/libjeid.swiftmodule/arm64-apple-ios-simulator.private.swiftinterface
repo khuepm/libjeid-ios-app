@@ -1,0 +1,1347 @@
+// swift-interface-format-version: 1.0
+// swift-compiler-version: Apple Swift version 5.10 (swiftlang-5.10.0.13 clang-1500.3.9.4)
+// swift-module-flags: -target arm64-apple-ios12.0-simulator -enable-objc-interop -enable-library-evolution -swift-version 5 -enforce-exclusivity=checked -O -enable-bare-slash-regex -module-name libjeid
+import CommonCrypto
+import Compression
+import CoreNFC
+import Foundation
+import Swift
+import _Concurrency
+import _StringProcessing
+import _SwiftConcurrencyShims
+@_exported import libjeid
+@objc public protocol NFCDriver {
+  @objc optional var _simulator: Swift.Bool { get set }
+  @objc func transmit(cmd: Foundation.Data, completion: @escaping (Foundation.Data?, Swift.UInt8, Swift.UInt8, (any Swift.Error)?) -> Swift.Void)
+}
+@available(iOS 13.0, *)
+@objc public class CoreNFCDriver : ObjectiveC.NSObject, libjeid.NFCDriver {
+  public init(_ tag: any CoreNFC.NFCISO7816Tag)
+  @objc public func transmit(cmd: Foundation.Data, completion: @escaping (Foundation.Data?, Swift.UInt8, Swift.UInt8, (any Swift.Error)?) -> Swift.Void)
+  @objc deinit
+}
+@objc @available(iOS 13.0, *)
+public class JeidReader : ObjectiveC.NSObject {
+  public init(_ tag: CoreNFC.NFCTag) throws
+  @objc public init(_ tag: any CoreNFC.NFCISO7816Tag) throws
+  @objc public init(driver: any libjeid.NFCDriver) throws
+  @objc public var debug: Swift.Bool {
+    @objc get
+    @objc set
+  }
+  public func detectCardType() throws -> libjeid.CardType
+  @objc(detectCardTypeAndReturnError:) public func detectCardTypeForObjC() throws -> Foundation.NSNumber
+  @objc public func selectDL() throws -> libjeid.DriverLicenseAP
+  @objc public func selectINText() throws -> libjeid.INTextAP
+  @objc public func selectINVisual() throws -> libjeid.INVisualAP
+  @objc public func selectEP() throws -> libjeid.PassportAP
+  @objc public func selectRC() throws -> libjeid.ResidenceCardAP
+  @objc deinit
+}
+@objc @available(iOS 13.0, *)
+public class PassportAP : ObjectiveC.NSObject {
+  @objc public init(_ reader: libjeid.JeidReader)
+  @objc public func startBAC(_ epKey: libjeid.EPKey) throws
+  @objc public func readFiles() throws -> libjeid.EPFiles
+  public func activeAuthentication(_ files: libjeid.EPFiles) throws -> Swift.Bool
+  @available(swift, obsoleted: 0.1)
+  @objc(activeAuthentication:error:) public func activeAuthenticationForObjC(_ files: libjeid.EPFiles) throws -> Foundation.NSNumber
+  @objc deinit
+}
+@objc public enum ValidationResultStatus : Swift.Int, Swift.CustomStringConvertible {
+  case VALID = 0
+  case INVALID_SIGNATURE = 1
+  case INVALID_CERTIFICATE = 2
+  public var description: Swift.String {
+    get
+  }
+  public var stringValue: Swift.String {
+    get
+  }
+  public var status: Swift.Int {
+    get
+  }
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @available(iOS 13.0, *)
+public class INVisualAP : ObjectiveC.NSObject {
+  @objc public init(_ reader: libjeid.JeidReader)
+  public func getPinA() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPinAAndReturnError:) public func getPinAForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPinA(_ pin: Swift.String) throws
+  public func getPinB() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPinBAndReturnError:) public func getPinBForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPinB(_ pin: Swift.String) throws
+  @objc public func verifyPin(_ pin: Swift.String) throws
+  @objc public func readFiles() throws -> libjeid.INVisualFiles
+  @objc public func readEntries() throws -> libjeid.INVisualEntries
+  @objc public func readMyNumber() throws -> libjeid.INVisualMyNumber
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 12.0, *)
+public class RCSignature : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var checkcode: Foundation.Data? {
+    @objc get
+  }
+  @objc public var certificate: Security.SecCertificate? {
+    @objc get
+  }
+  @objc deinit
+}
+public protocol CBORInputStream {
+  mutating func popByte() throws -> Swift.UInt8
+  mutating func popBytes(_ n: Swift.Int) throws -> Swift.ArraySlice<Swift.UInt8>
+}
+@objc @_hasMissingDesignatedInitializers public class DLDate : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var stringValue: Swift.String {
+    @objc get
+  }
+  @objc public var dateValue: Foundation.Date {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup11 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLChangedEntries : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var isChanged: Swift.Bool {
+    @objc get
+  }
+  @objc public var newPscNameList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newPscNameList")
+  @objc public var newPscNames: [Swift.String]? {
+    @objc get
+  }
+  @objc public var newNameList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newNameList")
+  @objc public var newNames: [Swift.String]? {
+    @objc get
+  }
+  @objc public var newKanaList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newKanaList")
+  @objc public var newCallNames: [Swift.String]? {
+    @objc get
+  }
+  @objc public var newAddressList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newAddressList")
+  @objc public var newAddresses: [Swift.String]? {
+    @objc get
+  }
+  @objc public var newConditionList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newConditionList")
+  @objc public var newConditions: [Swift.String]? {
+    @objc get
+  }
+  @objc public var conditionCancellationList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use conditionCancellationList")
+  @objc public var conditionCancellations: [Swift.String]? {
+    @objc get
+  }
+  @objc public var remarkList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use remarkList")
+  @objc public var remarks: [Swift.String]? {
+    @objc get
+  }
+  @objc public var reserveList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use reserveList")
+  @objc public var reserves: [Swift.String]? {
+    @objc get
+  }
+  @objc public var newRegisteredDomicileList: [libjeid.DLChangedEntry] {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use newRegisteredDomicileList")
+  @objc public var newRegisteredDomiciles: [Swift.String]? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup9 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class INTextMyNumber : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var myNumber: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCCommonData : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var version: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPMRZ : ObjectiveC.NSObject {
+  @objc public init(_ mrz: Swift.String) throws
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var documentCode: Swift.String {
+    @objc get
+  }
+  @objc public var issuingCountry: Swift.String {
+    @objc get
+  }
+  @objc public var name: Swift.String {
+    @objc get
+  }
+  @objc public var surname: Swift.String {
+    @objc get
+  }
+  @objc public var givenName: Swift.String {
+    @objc get
+  }
+  @objc public var passportNumber: Swift.String {
+    @objc get
+  }
+  @objc public var passportNumberCheckDigit: Swift.String {
+    @objc get
+  }
+  @objc public var nationality: Swift.String {
+    @objc get
+  }
+  @objc public var birthDate: Swift.String {
+    @objc get
+  }
+  @objc public var birthDateCheckDigit: Swift.String {
+    @objc get
+  }
+  @objc public var sex: Swift.String {
+    @objc get
+  }
+  @objc public var expirationDate: Swift.String {
+    @objc get
+  }
+  @objc public var expirationDateCheckDigit: Swift.String {
+    @objc get
+  }
+  @objc public var optionalData: Swift.String {
+    @objc get
+  }
+  @objc public var optionalDataCheckDigit: Swift.String {
+    @objc get
+  }
+  @objc public var compositeCheckDigit: Swift.String {
+    @objc get
+  }
+  @objc public var mrz: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCAddress : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var date: Swift.String? {
+    @objc get
+  }
+  @objc public var code: Swift.String? {
+    @objc get
+  }
+  @objc public var address: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCPhoto : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var photoData: Foundation.Data? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @available(iOS 13.0, *)
+public class INTextAP : ObjectiveC.NSObject {
+  @objc public init(_ reader: libjeid.JeidReader)
+  @objc public func setEnableInternalAuthentication(_ flag: Swift.Bool)
+  public func getPin() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPinAndReturnError:) public func getPinForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPin(_ pin: Swift.String) throws
+  public func getPinA() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPinAAndReturnError:) public func getPinAForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPinA(_ pin: Swift.String) throws
+  public func getPinB() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPinBAndReturnError:) public func getPinBForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPinB(_ pin: Swift.String) throws
+  @objc public func readFiles(_ readMyNumber: Swift.Bool = true, _ readAttributes: Swift.Bool = true) throws -> libjeid.INTextFiles
+  @objc public func readMyNumber() throws -> libjeid.INTextMyNumber
+  @objc public func readAttributes() throws -> libjeid.INTextAttributes
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup8 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc public enum FlavorType : Swift.Int {
+  case FREE
+  case FULL
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@_hasMissingDesignatedInitializers @objcMembers public class BuildConfig {
+  @objc public static var VERSION_CODE: Swift.Int {
+    @objc get
+  }
+  @objc public static var VERSION_NAME: Swift.String {
+    @objc get
+  }
+  @objc public static var FLAVOR: Swift.String {
+    @objc get
+  }
+  @objc public static var FLAVOR_TYPE: libjeid.FlavorType {
+    @objc get
+  }
+  @objc public static var FLAVOR_IS_FULL: Swift.Bool {
+    @objc get
+  }
+  @objc public static var FLAVOR_IS_FREE: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup12 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+public enum CBORError : Swift.Error {
+  case unfinishedSequence
+  case wrongTypeInsideSequence
+  case tooLongSequence
+  case incorrectUTF8String
+  public static func == (a: libjeid.CBORError, b: libjeid.CBORError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension libjeid.CBOR {
+  public static func decode(_ input: [Swift.UInt8]) throws -> libjeid.CBOR?
+}
+public class CBORDecoder {
+  public init(stream: any libjeid.CBORInputStream)
+  public init(input: Swift.ArraySlice<Swift.UInt8>)
+  public init(input: [Swift.UInt8])
+  public func decodeItem() throws -> libjeid.CBOR?
+  @objc deinit
+}
+public protocol CBOREncodable {
+  func encode() -> [Swift.UInt8]
+}
+extension libjeid.CBOR : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Int : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Int8 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Int16 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Int32 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Int64 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.UInt : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.UInt8 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.UInt16 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.UInt32 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.UInt64 : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.String : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Float : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Double : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Bool : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Array where Element : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Dictionary where Key : libjeid.CBOREncodable, Value : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Swift.Optional where Wrapped : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Foundation.NSNull : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Foundation.Date : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+extension Foundation.Data : libjeid.CBOREncodable {
+  public func encode() -> [Swift.UInt8]
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup14 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCComprehensivePermission : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var permission: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup13 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc public enum CardType : Swift.Int {
+  case UNKNOWN = 0
+  case IN = 1
+  case JUKI = 2
+  case DL = 3
+  case EP = 4
+  case RC = 5
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class INVisualMyNumber : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var myNumber: Foundation.Data? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLEntries : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var jisx0208year: Swift.UInt8 {
+    @objc get
+  }
+  @objc public var name: libjeid.DLString {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use name.toHTML()")
+  @objc public func nameHtml(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @available(iOS, unavailable, renamed: "name.toJSON()", message: "please use name.toJSON()")
+  @objc public func nameJson(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @objc public var kana: Swift.String? {
+    @objc get
+  }
+  @objc public var aliasName: libjeid.DLString {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use aliasName.toHTML()")
+  @objc public func aliasNameHtml(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @available(iOS, unavailable, renamed: "aliasName.toJSON()", message: "please use aliasName.toJSON()")
+  @objc public func aliasNameJson(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @objc public var callName: Swift.String? {
+    @objc get
+  }
+  @objc public var birthDate: libjeid.DLDate? {
+    @objc get
+  }
+  @objc public var address: libjeid.DLString {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use address.toHTML()")
+  @objc public func addressHtml(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @available(iOS, unavailable, renamed: "address.toJSON()", message: "please use address.toJSON()")
+  @objc public func addressJson(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @objc public var issueDate: libjeid.DLDate? {
+    @objc get
+  }
+  @objc public var refNumber: Swift.String? {
+    @objc get
+  }
+  @objc public var colorClass: Swift.String? {
+    @objc get
+  }
+  @objc public var expireDate: libjeid.DLDate? {
+    @objc get
+  }
+  @objc public var conditions: [Swift.String]? {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use conditions")
+  @objc public func conditionsHtml(_ extChars: libjeid.DLExternalCharacters) throws -> [Swift.String]
+  @available(iOS, unavailable, message: "please use conditions")
+  @objc public func conditionsJson(_ extChars: libjeid.DLExternalCharacters) throws -> [Swift.String]
+  @objc public var pscName: Swift.String? {
+    @objc get
+  }
+  @objc public var licenseNumber: Swift.String? {
+    @objc get
+  }
+  @objc public var categories: [libjeid.DLCategory]? {
+    @objc get
+  }
+  @objc public func category(_ tag: Swift.Int) -> libjeid.DLCategory?
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class ValidationResult : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var status: libjeid.ValidationResultStatus {
+    @objc get
+  }
+  @objc public var isValid: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup1 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var mrz: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers public class CardFiles : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public func get(_ path: Swift.String) -> Foundation.Data?
+  @objc public func put(_ path: Swift.String, _ data: Foundation.Data?)
+  @objc public var readDate: Foundation.Date {
+    @objc get
+  }
+  @objc public var sha256Digest: Foundation.Data {
+    @objc get
+  }
+  @objc deinit
+}
+@objc public class EPKey : ObjectiveC.NSObject {
+  @objc public init(_ passportNumber: Swift.String, _ birthDate: Swift.String, _ expirationDate: Swift.String) throws
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+final public class CodableCBORDecoder {
+  public init()
+  final public var userInfo: [Swift.CodingUserInfoKey : Any]
+  final public func decode<T>(_ type: T.Type, from data: Foundation.Data) throws -> T where T : Swift.Decodable
+  final public func decode<T>(_ type: T.Type, from data: Swift.ArraySlice<Swift.UInt8>) throws -> T where T : Swift.Decodable
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class INTextFiles : libjeid.CardFiles {
+  @objc public func dump() throws -> Foundation.Data
+  @objc public func getMyNumber() throws -> libjeid.INTextMyNumber
+  @objc public func getAttributes() throws -> libjeid.INTextAttributes
+  @objc public func validate() throws -> libjeid.ValidationResult
+  @objc public func validate(_ params: libjeid.ValidationParameters) throws -> libjeid.ValidationResult
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class RCUpdateStatus : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var status: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup4 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @available(iOS 13.0, *)
+public class DriverLicenseAP : ObjectiveC.NSObject {
+  @objc public init(_ reader: libjeid.JeidReader)
+  public func getPin1() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPin1AndReturnError:) public func getPin1ForObjC() throws -> Foundation.NSNumber
+  public func getPin2() throws -> Swift.Int
+  @available(swift, obsoleted: 0.1)
+  @objc(getPin2AndReturnError:) public func getPin2ForObjC() throws -> Foundation.NSNumber
+  @objc public func verifyPin1(_ pin: Swift.String) throws
+  @objc public func verifyPin2(_ pin: Swift.String) throws
+  @objc public func readFiles() throws -> libjeid.DLFiles
+  @objc public func readCommonData() throws -> libjeid.DLCommonData
+  @objc public func readEntries() throws -> libjeid.DLEntries
+  @objc public func readRegisteredDomicile() throws -> libjeid.DLRegisteredDomicile
+  @objc public func readExternalCharacters() throws -> libjeid.DLExternalCharacters
+  @objc public func readChangedEntries() throws -> libjeid.DLChangedEntries
+  @objc public func readChangedRegisteredDomicile() throws -> libjeid.DLChangedEntries
+  @objc public func readSignature() throws -> libjeid.DLSignature
+  @objc public func readPhoto() throws -> libjeid.DLPhoto
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLCommonData : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var version: Swift.String? {
+    @objc get
+  }
+  @objc public var issueDate: Swift.String? {
+    @objc get
+  }
+  @objc public var expireDate: Swift.String? {
+    @objc get
+  }
+  @objc public var manufacturerID: Swift.UInt8 {
+    @objc get
+  }
+  @objc public var encryptionID: Swift.UInt8 {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class DLSignature : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var signature: Foundation.Data? {
+    @objc get
+  }
+  @objc public var serial: Foundation.Data? {
+    @objc get
+  }
+  @objc public var issuer: Swift.String? {
+    @objc get
+  }
+  @objc public var subject: Swift.String? {
+    @objc get
+  }
+  @objc public var subjectKeyIdentifier: Foundation.Data? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc(JeidError) public enum JeidErrorCode : Swift.Int {
+  case decodeFailed
+  case encodeFailed
+  case fileNotFound
+  case invalidKey
+  case invalidPin
+  case securityStatusNotSatisfied
+  case signatureVerificationFailed
+  case transceiveFailed
+  case unexpectedResponse
+  case unsupportedOperation
+  public init?(rawValue: Swift.Int)
+  public typealias RawValue = Swift.Int
+  public var rawValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers public class RCCardType : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var type: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers public class ValidationParameters : ObjectiveC.NSObject {
+  @objc override dynamic public init()
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var country: Swift.String {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc public var date: Foundation.Date? {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc public var validateMyNumber: Swift.Bool {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc public var validateAttributes: Swift.Bool {
+    @objc get
+    @objc set(newValue)
+  }
+  @objc deinit
+}
+extension libjeid.CBOR {
+  public static func encode<T>(_ value: T) -> [Swift.UInt8] where T : libjeid.CBOREncodable
+  public static func encode<T>(_ array: [T], asByteString: Swift.Bool = false) -> [Swift.UInt8] where T : libjeid.CBOREncodable
+  public static func encode<A, B>(_ dict: [A : B]) -> [Swift.UInt8] where A : Swift.Hashable, A : libjeid.CBOREncodable, B : libjeid.CBOREncodable
+  public static func encodeUInt8(_ x: Swift.UInt8) -> [Swift.UInt8]
+  public static func encodeUInt16(_ x: Swift.UInt16) -> [Swift.UInt8]
+  public static func encodeUInt32(_ x: Swift.UInt32) -> [Swift.UInt8]
+  public static func encodeUInt64(_ x: Swift.UInt64) -> [Swift.UInt8]
+  public static func encodeNegativeInt(_ x: Swift.Int64) -> [Swift.UInt8]
+  public static func encodeByteString(_ bs: [Swift.UInt8]) -> [Swift.UInt8]
+  public static func encodeData(_ data: Foundation.Data) -> [Swift.UInt8]
+  public static func encodeString(_ str: Swift.String) -> [Swift.UInt8]
+  public static func encodeArray<T>(_ arr: [T]) -> [Swift.UInt8] where T : libjeid.CBOREncodable
+  public static func encodeMap<A, B>(_ map: [A : B]) -> [Swift.UInt8] where A : Swift.Hashable, A : libjeid.CBOREncodable, B : libjeid.CBOREncodable
+  public static func encodeMap<A>(_ map: [A : Any?]) throws -> [Swift.UInt8] where A : Swift.Hashable, A : libjeid.CBOREncodable
+  public static func encodeTagged<T>(tag: libjeid.CBOR.Tag, value: T) -> [Swift.UInt8] where T : libjeid.CBOREncodable
+  public static func encodeSimpleValue(_ x: Swift.UInt8) -> [Swift.UInt8]
+  public static func encodeNull() -> [Swift.UInt8]
+  public static func encodeUndefined() -> [Swift.UInt8]
+  public static func encodeBreak() -> [Swift.UInt8]
+  public static func encodeFloat(_ x: Swift.Float) -> [Swift.UInt8]
+  public static func encodeDouble(_ x: Swift.Double) -> [Swift.UInt8]
+  public static func encodeBool(_ x: Swift.Bool) -> [Swift.UInt8]
+  public static func encodeArrayStreamStart() -> [Swift.UInt8]
+  public static func encodeMapStreamStart() -> [Swift.UInt8]
+  public static func encodeStringStreamStart() -> [Swift.UInt8]
+  public static func encodeByteStringStreamStart() -> [Swift.UInt8]
+  public static func encodeStreamEnd() -> [Swift.UInt8]
+  public static func encodeArrayChunk<T>(_ chunk: [T]) -> [Swift.UInt8] where T : libjeid.CBOREncodable
+  public static func encodeMapChunk<A, B>(_ map: [A : B]) -> [Swift.UInt8] where A : Swift.Hashable, A : libjeid.CBOREncodable, B : libjeid.CBOREncodable
+  public static func encodeDate(_ date: Foundation.Date) -> [Swift.UInt8]
+  public static func encodeAny(_ any: Any?) throws -> [Swift.UInt8]
+}
+public enum CBOREncoderError : Swift.Error {
+  case invalidType
+  public static func == (a: libjeid.CBOREncoderError, b: libjeid.CBOREncoderError) -> Swift.Bool
+  public func hash(into hasher: inout Swift.Hasher)
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+@objc @_hasMissingDesignatedInitializers public class DLRegisteredDomicile : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var registeredDomicile: libjeid.DLString {
+    @objc get
+  }
+  @available(iOS, deprecated, message: "please use registeredDomicile.toHTML()")
+  @objc public func registeredDomicileHtml(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @available(iOS, unavailable, renamed: "registeredDomicile.toJSON()", message: "please use registeredDomicile.toJSON()")
+  @objc public func registeredDomicileJson(_ extChars: libjeid.DLExternalCharacters) throws -> Swift.String
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class EPDataGroup15 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLCategory : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var date: libjeid.DLDate {
+    @objc get
+  }
+  @objc public var tag: Swift.Int {
+    @objc get
+  }
+  @objc public var name: Swift.String {
+    @objc get
+  }
+  @objc public var isLicensed: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup6 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDocumentSecurityObject : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var securityObject: libjeid.EPSecurityObject? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc public class RCKey : ObjectiveC.NSObject {
+  @objc public init(_ number: Swift.String) throws
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup5 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLPinSetting : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var isPinSet: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCIndividualPermission : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var permission: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class INVisualFiles : libjeid.CardFiles {
+  @objc public func dump() throws -> Foundation.Data
+  @objc public func getEntries() throws -> libjeid.INVisualEntries
+  @objc public func getMyNumber() throws -> libjeid.INVisualMyNumber
+  @objc public func validate() throws -> libjeid.ValidationResult
+  @objc public func validate(_ params: libjeid.ValidationParameters) throws -> libjeid.ValidationResult
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLExternalCharacters : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var isChanged: Swift.Bool {
+    @objc get
+  }
+  @objc deinit
+}
+public enum JeidError : Swift.CustomStringConvertible, Foundation.CustomNSError, Foundation.LocalizedError {
+  case decodeFailed(message: Swift.String)
+  case encodeFailed(message: Swift.String)
+  case fileNotFound(message: Swift.String)
+  case invalidKey(message: Swift.String)
+  case invalidPin(counter: Swift.Int)
+  case securityStatusNotSatisfied
+  case signatureVerificationFailed(message: Swift.String)
+  case transceiveFailed(message: Swift.String)
+  case unexpectedResponse(response: Foundation.Data)
+  case unsupportedOperation(message: Swift.String)
+  public var description: Swift.String {
+    get
+  }
+  public var isBlocked: Swift.Bool? {
+    get
+  }
+  public var errorDescription: Swift.String? {
+    get
+  }
+  public static var errorDomain: Swift.String {
+    get
+  }
+  public var errorCode: Swift.Int {
+    get
+  }
+  public var errorUserInfo: [Swift.String : Any] {
+    get
+  }
+}
+@objc @available(iOS 13.0, *)
+public class ResidenceCardAP : ObjectiveC.NSObject {
+  @objc public init(_ reader: libjeid.JeidReader)
+  @objc public func startAC(_ rcKey: libjeid.RCKey) throws
+  @objc public func readFiles() throws -> libjeid.RCFiles
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLChangedEntry : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var date: libjeid.DLDate {
+    @objc get
+  }
+  @objc public var value: libjeid.DLString {
+    @objc get
+  }
+  @objc public var psc: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class RCCardEntries : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var tiffData: Foundation.Data? {
+    @objc get
+  }
+  @objc public func pngData() throws -> Foundation.Data
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class DLPhoto : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var photoData: Foundation.Data? {
+    @objc get
+  }
+  @objc deinit
+}
+indirect public enum CBOR : Swift.Equatable, Swift.Hashable, Swift.ExpressibleByNilLiteral, Swift.ExpressibleByIntegerLiteral, Swift.ExpressibleByStringLiteral, Swift.ExpressibleByArrayLiteral, Swift.ExpressibleByDictionaryLiteral, Swift.ExpressibleByBooleanLiteral, Swift.ExpressibleByFloatLiteral {
+  case unsignedInt(Swift.UInt64)
+  case negativeInt(Swift.UInt64)
+  case byteString([Swift.UInt8])
+  case utf8String(Swift.String)
+  case array([libjeid.CBOR])
+  case map([libjeid.CBOR : libjeid.CBOR])
+  case tagged(libjeid.CBOR.Tag, libjeid.CBOR)
+  case simple(Swift.UInt8)
+  case boolean(Swift.Bool)
+  case null
+  case undefined
+  case half(Swift.Float32)
+  case float(Swift.Float32)
+  case double(Swift.Float64)
+  case `break`
+  case date(Foundation.Date)
+  public func hash(into hasher: inout Swift.Hasher)
+  public subscript(position: libjeid.CBOR) -> libjeid.CBOR? {
+    get
+    set(x)
+  }
+  public init(nilLiteral: ())
+  public init(integerLiteral value: Swift.Int)
+  public init(extendedGraphemeClusterLiteral value: Swift.String)
+  public init(unicodeScalarLiteral value: Swift.String)
+  public init(stringLiteral value: Swift.String)
+  public init(arrayLiteral elements: libjeid.CBOR...)
+  public init(dictionaryLiteral elements: (libjeid.CBOR, libjeid.CBOR)...)
+  public init(booleanLiteral value: Swift.Bool)
+  public init(floatLiteral value: Swift.Float32)
+  public static func == (lhs: libjeid.CBOR, rhs: libjeid.CBOR) -> Swift.Bool
+  public struct Tag : Swift.RawRepresentable, Swift.Equatable, Swift.Hashable {
+    public let rawValue: Swift.UInt64
+    public init(rawValue: Swift.UInt64)
+    public var hashValue: Swift.Int {
+      get
+    }
+    public typealias RawValue = Swift.UInt64
+  }
+  public typealias ArrayLiteralElement = libjeid.CBOR
+  public typealias BooleanLiteralType = Swift.Bool
+  public typealias ExtendedGraphemeClusterLiteralType = Swift.String
+  public typealias FloatLiteralType = Swift.Float32
+  public typealias IntegerLiteralType = Swift.Int
+  public typealias Key = libjeid.CBOR
+  public typealias StringLiteralType = Swift.String
+  public typealias UnicodeScalarLiteralType = Swift.String
+  public typealias Value = libjeid.CBOR
+  public var hashValue: Swift.Int {
+    get
+  }
+}
+extension libjeid.CBOR.Tag {
+  public static let standardDateTimeString: libjeid.CBOR.Tag
+  public static let epochBasedDateTime: libjeid.CBOR.Tag
+  public static let positiveBignum: libjeid.CBOR.Tag
+  public static let negativeBignum: libjeid.CBOR.Tag
+  public static let decimalFraction: libjeid.CBOR.Tag
+  public static let bigfloat: libjeid.CBOR.Tag
+  public static let expectedConversionToBase64URLEncoding: libjeid.CBOR.Tag
+  public static let expectedConversionToBase64Encoding: libjeid.CBOR.Tag
+  public static let expectedConversionToBase16Encoding: libjeid.CBOR.Tag
+  public static let encodedCBORDataItem: libjeid.CBOR.Tag
+  public static let uri: libjeid.CBOR.Tag
+  public static let base64Url: libjeid.CBOR.Tag
+  public static let base64: libjeid.CBOR.Tag
+  public static let regularExpression: libjeid.CBOR.Tag
+  public static let mimeMessage: libjeid.CBOR.Tag
+  public static let uuid: libjeid.CBOR.Tag
+  public static let selfDescribeCBOR: libjeid.CBOR.Tag
+}
+@objc @_hasMissingDesignatedInitializers public class DLString : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var isEmpty: Swift.Bool {
+    @objc get
+  }
+  @objc public var hasExtChars: Swift.Bool {
+    @objc get
+  }
+  @objc public func toString() -> Swift.String
+  @objc public func toHTML() throws -> Swift.String
+  @objc public func toJSON() throws -> Swift.String
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class EPFiles : libjeid.CardFiles {
+  @objc public func dump() throws -> Foundation.Data
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public func getCommonData() throws -> libjeid.EPCommonData
+  @objc public func getDocumentSecurityObject() throws -> libjeid.EPDocumentSecurityObject
+  @objc public func getDataGroup1() throws -> libjeid.EPDataGroup1
+  @objc public func getDataGroup2() throws -> libjeid.EPDataGroup2
+  @objc public func getDataGroup3() throws -> libjeid.EPDataGroup3
+  @objc public func getDataGroup4() throws -> libjeid.EPDataGroup4
+  @objc public func getDataGroup5() throws -> libjeid.EPDataGroup5
+  @objc public func getDataGroup13() throws -> libjeid.EPDataGroup13
+  @objc public func getDataGroup14() throws -> libjeid.EPDataGroup14
+  @objc public func getDataGroup15() throws -> libjeid.EPDataGroup15
+  @objc public func validate() throws -> libjeid.ValidationResult
+  @objc public func validate(_ params: libjeid.ValidationParameters) throws -> libjeid.ValidationResult
+  @objc deinit
+}
+public class CodableCBOREncoder {
+  public init()
+  public func encode(_ value: any Swift.Encodable) throws -> Foundation.Data
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup7 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class RCFiles : libjeid.CardFiles {
+  @objc public func dump() throws -> Foundation.Data
+  @objc public func getCommonData() throws -> libjeid.RCCommonData
+  @objc public func getCardType() throws -> libjeid.RCCardType
+  @objc public func getCardEntries() throws -> libjeid.RCCardEntries
+  @objc public func getPhoto() throws -> libjeid.RCPhoto
+  @objc public func getAddress() throws -> libjeid.RCAddress
+  @objc public func getComprehensivePermission() throws -> libjeid.RCComprehensivePermission
+  @objc public func getIndividualPermission() throws -> libjeid.RCIndividualPermission
+  @objc public func getUpdateStatus() throws -> libjeid.RCUpdateStatus
+  @objc public func getSignature() throws -> libjeid.RCSignature
+  @objc public func validate() throws -> libjeid.ValidationResult
+  @objc public func validate(_ params: libjeid.ValidationParameters) throws -> libjeid.ValidationResult
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPCommonData : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var ldsVersion: Swift.String? {
+    @objc get
+  }
+  @objc public var unicodeVersion: Swift.String? {
+    @objc get
+  }
+  @objc public var tagList: [Swift.UInt8] {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_inheritsConvenienceInitializers @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class DLFiles : libjeid.CardFiles {
+  @objc public func dump() throws -> Foundation.Data
+  @objc public func getCommonData() throws -> libjeid.DLCommonData
+  @objc public func getPinSetting() throws -> libjeid.DLPinSetting
+  @objc public func getEntries() throws -> libjeid.DLEntries
+  @objc public func getRegisteredDomicile() throws -> libjeid.DLRegisteredDomicile
+  @objc public func getExternalCharacters() throws -> libjeid.DLExternalCharacters
+  @objc public func getChangedEntries() throws -> libjeid.DLChangedEntries
+  @objc public func getChangedRegisteredDomicile() throws -> libjeid.DLChangedEntries
+  @objc public func getSignature() throws -> libjeid.DLSignature
+  @objc public func getPhoto() throws -> libjeid.DLPhoto
+  @objc public func validate() throws -> libjeid.ValidationResult
+  @objc public func validate(_ params: libjeid.ValidationParameters) throws -> libjeid.ValidationResult
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class INTextAttributes : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var header: Foundation.Data? {
+    @objc get
+  }
+  @objc public var name: Swift.String? {
+    @objc get
+  }
+  @objc public var address: Swift.String? {
+    @objc get
+  }
+  @objc public var birthDate: Swift.String? {
+    @objc get
+  }
+  @objc public var sex: Swift.String? {
+    @objc get
+  }
+  @objc public var sexString: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup2 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var faceJpeg: Foundation.Data? {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPSecurityObject : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var hashAlgorithm: Swift.String {
+    @objc get
+  }
+  @objc public var hashValues: [Swift.Int : Foundation.Data] {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup10 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup3 : libjeid.EPDataGroup {
+  public static let FID: Swift.String
+  public static let SFID: Swift.UInt8
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers public class EPDataGroup : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var fid: Swift.String {
+    @objc get
+  }
+  @objc public var shortFID: Swift.UInt8 {
+    @objc get
+  }
+  @objc deinit
+}
+@objc @_hasMissingDesignatedInitializers @available(iOS 13.0, *)
+public class INVisualEntries : ObjectiveC.NSObject {
+  @objc override dynamic public var description: Swift.String {
+    @objc get
+  }
+  @objc public var encoded: Foundation.Data {
+    @objc get
+  }
+  @objc public var header: Foundation.Data? {
+    @objc get
+  }
+  @objc public var birthDate: Swift.String? {
+    @objc get
+  }
+  @objc public var sex: Swift.String? {
+    @objc get
+  }
+  @objc public var sexString: Swift.String? {
+    @objc get
+  }
+  @objc public var name: Foundation.Data? {
+    @objc get
+  }
+  @objc public var address: Foundation.Data? {
+    @objc get
+  }
+  @objc public var photoData: Foundation.Data? {
+    @objc get
+  }
+  @objc public var signature: Foundation.Data? {
+    @objc get
+  }
+  @objc public var expireDate: Swift.String? {
+    @objc get
+  }
+  @objc deinit
+}
+extension libjeid.ValidationResultStatus : Swift.Equatable {}
+extension libjeid.ValidationResultStatus : Swift.Hashable {}
+extension libjeid.ValidationResultStatus : Swift.RawRepresentable {}
+extension libjeid.FlavorType : Swift.Equatable {}
+extension libjeid.FlavorType : Swift.Hashable {}
+extension libjeid.FlavorType : Swift.RawRepresentable {}
+extension libjeid.CBORError : Swift.Equatable {}
+extension libjeid.CBORError : Swift.Hashable {}
+extension libjeid.CardType : Swift.Equatable {}
+extension libjeid.CardType : Swift.Hashable {}
+extension libjeid.CardType : Swift.RawRepresentable {}
+extension libjeid.JeidErrorCode : Swift.Equatable {}
+extension libjeid.JeidErrorCode : Swift.Hashable {}
+extension libjeid.JeidErrorCode : Swift.RawRepresentable {}
+extension libjeid.CBOREncoderError : Swift.Equatable {}
+extension libjeid.CBOREncoderError : Swift.Hashable {}

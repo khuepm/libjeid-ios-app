@@ -1,0 +1,11 @@
+framework module libjeid {
+  umbrella header "libjeid.h"
+  export *
+
+  module * { export * }
+}
+
+module libjeid.Swift {
+  header "libjeid-Swift.h"
+  requires objc
+}
