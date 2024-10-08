@@ -18,11 +18,11 @@ class RCReaderView: UIView {
 
     init() {
         let explanation = CustomViewUtil.createTextView(UIScreen.main.bounds.size)
-        explanation.text = "読み取り開始ボタンを押下後、端末をカードにかざしてください。\n"
-            + "在留カードおよび特別永住者証明書に対応しています。"
+        explanation.text = "After pressing the Start Reading button, hold the device up to the card.\n"
+                    + "It supports residence cards and special permanent resident certificates."
 
         let numberLabel = CustomViewUtil.createTextView(UIScreen.main.bounds.size)
-        numberLabel.text = "在留カード等の番号"
+        numberLabel.text = "Residence card or equivalent number"
 
         numberField = CustomViewUtil.createTextField(UIScreen.main.bounds.size)
         numberField.keyboardType = UIKeyboardType.asciiCapable
@@ -33,7 +33,7 @@ class RCReaderView: UIView {
         pin1StackView.addArrangedSubview(numberField)
 
         startButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        startButton.setTitle("読み取り開始", for: .normal)
+        startButton.setTitle("Start Reading", for: .normal)
 
         let stackView = CustomViewUtil.createVerticalStackView(UIScreen.main.bounds.size)
         stackView.addArrangedSubview(explanation)

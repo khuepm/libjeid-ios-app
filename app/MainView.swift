@@ -21,20 +21,20 @@ class MainView: UIView {
 
     init() {
         inButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        inButton.setTitle("マイナンバーカード", for: .normal)
+        inButton.setTitle("My Number Card", for: .normal)
 
         dlButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        dlButton.setTitle("運転免許証", for: .normal)
+        dlButton.setTitle("Driver's License", for: .normal)
 
         epButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        epButton.setTitle("パスポート", for: .normal)
+        epButton.setTitle("Passport", for: .normal)
         epButton.isHidden = true
 
         rcButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        rcButton.setTitle("在留カード", for: .normal)
+        rcButton.setTitle("Residence Card", for: .normal)
 
         pinButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        pinButton.setTitle("暗証番号ステータス", for: .normal)
+        pinButton.setTitle("PIN Code Status", for: .normal)
 
         let stackView = CustomViewUtil.createVerticalStackView(UIScreen.main.bounds.size)
         stackView.addArrangedSubview(inButton)

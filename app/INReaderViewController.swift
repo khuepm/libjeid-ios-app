@@ -18,7 +18,7 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
     private var pin: String?
 
     override func loadView() {
-        self.title = "マイナンバーカードリーダー"
+        self.title = "My Number Card Reader" // Translated from "マイナンバーカードリーダー"
         inReaderView = INReaderView()
         pinField = inReaderView.pinField
         pinField.delegate = self
@@ -35,15 +35,15 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
             activeField.resignFirstResponder()
         }
         if (!NFCReaderSession.readingAvailable) {
-            self.openAlertView("エラー", "お使いの端末はNFCに対応していません。")
+            self.openAlertView("Error", "Your device does not support NFC.") // Translated from "エラー", "お使いの端末はNFCに対応していません。"
             return
         }
         self.clearPublishedLog()
         if let _ = self.session {
-            publishLog("しばらく待ってから再度お試しください")
+            publishLog("Please wait a moment and try again") // Translated from "しばらく待ってから再度お試しください"
         } else {
             self.session = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self, queue: DispatchQueue.global())
-            self.session?.alertMessage = "カードに端末をかざしてください"
+            self.session?.alertMessage = "Please hold your device near the card" // Translated from "カードに端末をかざしてください"
             self.session?.begin()
             self.inReaderView.startButton.alpha = Self.INACTIVE_ALPHA
         }
@@ -66,9 +66,9 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
         if let nfcError = error as? NFCReaderError {
             if nfcError.code != .readerSessionInvalidationErrorUserCanceled {
                 print("tagReaderSession error: " + nfcError.localizedDescription)
-                self.publishLog("エラー: " + nfcError.localizedDescription)
+                self.publishLog("Error: " + nfcError.localizedDescription)
                 if nfcError.code == .readerSessionInvalidationErrorSessionTerminatedUnexpectedly {
-                    self.publishLog("しばらく待ってから再度お試しください")
+                    self.publishLog("Please wait a moment and try again") // Translated from "しばらく待ってから再度お試しください"
                 }
             }
         } else {
@@ -82,8 +82,8 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
 
     func tagReaderSession(_ session: NFCTagReaderSession,
                           didDetect tags: [NFCTag]) {
-        let msgReadingHeader = "読み取り中\n"
-        let msgErrorHeader = "エラー\n"
+        let msgReadingHeader = "Reading\n" // Translated from "読み取り中\n"
+        let msgErrorHeader = "Error\n" // Translated from "エラー\n"
         print("reader session thread: \(Thread.current)")
         let tag = tags.first!
         session.connect(to: tag) { (error: Error?) in
@@ -95,34 +95,34 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
             }
             do {
                 if (self.pin == nil || self.pin!.isEmpty || self.pin!.count != 4) {
-                    self.publishLog("4桁の暗証番号を入力してください")
-                    session.invalidate(errorMessage: "\(msgErrorHeader)暗証番号が入力されていません")
+                    self.publishLog("Please enter a 4-digit PIN") // Translated from "4桁の暗証番号を入力してください"
+                    session.invalidate(errorMessage: "\(msgErrorHeader)PIN has not been entered") // Translated from "暗証番号が入力されていません"
                     return
                 }
                 let reader = try JeidReader(tag)
                 self.clearPublishedLog()
-                session.alertMessage = "読み取り開始..."
+                session.alertMessage = "Reading..."
                 let cardType = try reader.detectCardType()
                 if (cardType != CardType.IN) {
-                    self.publishLog("マイナンバーカードではありません")
-                    session.invalidate(errorMessage: "\(msgErrorHeader)マイナンバーカードではありません")
+                    self.publishLog("This is not a My Number Card") // Translated from "マイナンバーカードではありません"
+                    session.invalidate(errorMessage: "\(msgErrorHeader)This is not a My Number Card") // Translated from "マイナンバーカードではありません"
                     return
                 }
-                self.publishLog("# マイナンバーカードの読み取り開始")
+                self.publishLog("# Starting My Number Card reading") // Translated from "# マイナンバーカードの読み取り開始"
                 print("thread: \(Thread.current)")
-                self.publishLog("## 券面入力補助APから情報を取得します")
+                self.publishLog("## Retrieving information from the text input assistance AP") // Translated from "## 券面入力補助APから情報を取得します"
                 let textAp = try reader.selectINText()
                 do {
-                    session.alertMessage = "\(msgReadingHeader)暗証番号による認証..."
-                    self.publishLog("### 暗証番号による認証")
+                    session.alertMessage = "\(msgReadingHeader)Authenticating with PIN..." // Translated from "暗証番号による認証..."
+                    self.publishLog("### Authenticating with PIN") // Translated from "### 暗証番号による認証"
                     try textAp.verifyPin(self.pin!)
-                    self.publishLog("成功\n")
-                    session.alertMessage += "成功"
+                    self.publishLog("Success\n")
+                    session.alertMessage += "Success"
                 } catch let jeidError as JeidError {
                     switch jeidError {
                     case .invalidPin:
-                        session.invalidate(errorMessage: "\(msgErrorHeader)認証失敗")
-                        self.publishLog("失敗\n")
+                        session.invalidate(errorMessage: "\(msgErrorHeader)Authentication failed") // Translated from "認証失敗"
+                        self.publishLog("Failed\n")
                         self.handleInvalidPinError(jeidError)
                         return
                     default:
@@ -130,12 +130,12 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
                     }
                 }
 
-                session.alertMessage = "\(msgReadingHeader)券面入力補助AP内の情報..."
+                session.alertMessage = "\(msgReadingHeader)Retrieving information from the text input assistance AP..."
                 let textFiles = try textAp.readFiles()
-                session.alertMessage += "成功"
+                session.alertMessage += "Success"
 
                 var dataDict = Dictionary<String, Any>()
-                self.publishLog("### 個人番号")
+                self.publishLog("### Personal Number")
                 do {
                     let textMyNumber = try textFiles.getMyNumber()
                     self.publishLog(textMyNumber.description)
@@ -144,11 +144,11 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
                     }
                 } catch JeidError.unsupportedOperation {
                     // 無償版の場合、INTextFiles#getMyNumber()でJeidError.unsupportedOperationが返ります
-                    self.publishLog("無償版ライブラリは個人番号の取得をサポートしません\n")
+                    self.publishLog("Free version library does not support retrieving personal number\n")
                 }
 
                 let textAttrs = try textFiles.getAttributes()
-                self.publishLog("### 4情報")
+                self.publishLog("### 4 Information")
                 self.publishLog(textAttrs.description)
                 if let name = textAttrs.name {
                     dataDict["cardinfo-name"] = name
@@ -163,28 +163,28 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
                     dataDict["cardinfo-addr"] = address
                 }
 
-                self.publishLog("### 券面入力補助APの真正性検証")
+                self.publishLog("### Validating the text input assistance AP")
                 do {
                     let textApValidationResult = try textFiles.validate()
                     self.publishLog(textApValidationResult.description + "\n")
                     dataDict["textap-validation-result"] = textApValidationResult.isValid
                 } catch JeidError.unsupportedOperation {
                     // 無償版の場合、INTextFiles#validate()でJeidError.unsupportedOperationが返ります
-                    self.publishLog("無償版ライブラリは真正性検証をサポートしません\n")
+                    self.publishLog("Free version library does not support validation\n")
                 }
 
-                self.publishLog("## 券面APから情報を取得します")
+                self.publishLog("## Retrieving information from the visual AP")
                 let visualAp = try reader.selectINVisual()
-                session.alertMessage = "\(msgReadingHeader)暗証番号による認証..."
-                self.publishLog("### 暗証番号による認証")
+                session.alertMessage = "\(msgReadingHeader)Authenticating with PIN..."
+                self.publishLog("### Authenticating with PIN")
                 try visualAp.verifyPin(self.pin!)
-                self.publishLog("成功\n")
-                session.alertMessage += "成功"
-                session.alertMessage = "\(msgReadingHeader)券面AP内の情報..."
+                self.publishLog("Success\n")
+                session.alertMessage += "Success"
+                session.alertMessage = "\(msgReadingHeader)Retrieving information from the visual AP..."
                 let visualFiles = try visualAp.readFiles()
-                session.alertMessage += "成功"
+                session.alertMessage += "Success"
                 let visualEntries = try visualFiles.getEntries()
-                self.publishLog("### 券面事項")
+                self.publishLog("### Card Entries")
                 self.publishLog(visualEntries.description)
                 if let expireDate = visualEntries.expireDate {
                     dataDict["cardinfo-expire"] = expireDate
@@ -218,21 +218,21 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
                     // 無償版の場合、INVisualFiles#getMyNumber()でJeidError.unsupportedOperationが返ります
                 }
 
-                self.publishLog("### 券面APの真正性検証")
+                self.publishLog("### Validating the visual AP")
                 do {
                     let visualApValidationResult = try visualFiles.validate()
                     self.publishLog(visualApValidationResult.description + "\n")
                     dataDict["visualap-validation-result"] = visualApValidationResult.isValid
                 } catch JeidError.unsupportedOperation {
                     // 無償版の場合、INVisualFiles#validate()でJeidError.unsupportedOperationが返ります
-                    self.publishLog("無償版ライブラリは真正性検証をサポートしません\n")
+                    self.publishLog("Free version library does not support validation\n")
                 }
 
-                session.alertMessage = "読み取り完了"
+                session.alertMessage = "Reading completed"
                 session.invalidate()
                 self.openWebView(dataDict)
             } catch {
-                session.invalidate(errorMessage: session.alertMessage + "失敗")
+                session.invalidate(errorMessage: session.alertMessage + "Failed") // Translated from "失敗"
                 self.publishLog("\(error)")
             }
         }
@@ -248,11 +248,11 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
                 let path = Bundle.main.path(forResource: "in", ofType: "html", inDirectory: "WebAssets/in")!
                 let localHtmlUrl = URL(fileURLWithPath: path, isDirectory: false)
                 let webViewController = WebViewController(localHtmlUrl, "render(\'\(jsonStr!)\');")
-                webViewController.title = "マイナンバーカードビューア"
+                webViewController.title = "My Number Card Viewer"
                 self.navigationController?.pushViewController(webViewController, animated: true)
             } catch (let error) {
                 self.publishLog("\(error)")
-                self.openAlertView("エラー", "読み取り結果の表示に失敗しました")
+                self.openAlertView("Error", "Failed to display reading results")
             }
         }
     }
@@ -265,12 +265,12 @@ class INReaderViewController: WrapperViewController, NFCTagReaderSessionDelegate
             return
         }
         if (jeidError.isBlocked!) {
-            title = "暗証番号がブロックされています"
-            message = "市区町村窓口でブロック解除の申請を行ってください。"
+            title = "PIN is blocked" // Translated from "暗証番号がブロックされています"
+            message = "Please apply for unblocking at your municipal office." // Translated from "市区町村窓口でブロック解除の申請を行ってください。"
         } else {
-            title = "暗証番号が間違っています"
-            message = "暗証番号を正しく入力してください。\n"
-                + "残り\(counter)回間違えるとブロックされます。"
+            title = "Incorrect PIN" // Translated from "暗証番号が間違っています"
+            message = "Please enter the correct PIN.\n" // Translated from "暗証番号を正しく入力してください。\n"
+                + "It will be blocked after \(counter) more incorrect attempts." // Translated from "残り\(counter)回間違えるとブロックされます。"
         }
         openAlertView(title, message)
     }

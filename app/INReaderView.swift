@@ -18,11 +18,11 @@ class INReaderView: UIView {
 
     init() {
         let explanation = CustomViewUtil.createTextView(UIScreen.main.bounds.size)
-        explanation.text = "マイナンバーカードの券面事項を表示します。\n"
-                           + "読み取り開始ボタンを押下後、端末をカードにかざしてください。"
+        explanation.text = "The information on the My Number card will be displayed.\n"
+                    + "After pressing the Start Reading button, hold the device up to the card."
 
         let pinLabel = CustomViewUtil.createTextView(UIScreen.main.bounds.size)
-        pinLabel.text = "暗証番号(4桁、必須)"
+        pinLabel.text = "PIN (4 digits, required)"
 
         pinField = CustomViewUtil.createTextField(UIScreen.main.bounds.size)
         pinField.isSecureTextEntry = true
@@ -33,7 +33,7 @@ class INReaderView: UIView {
         pinStackView.addArrangedSubview(pinField)
 
         startButton = CustomViewUtil.createButton(UIScreen.main.bounds.size)
-        startButton.setTitle("読み取り開始", for: .normal)
+        startButton.setTitle("Start Reading", for: .normal)
 
         let stackView = CustomViewUtil.createVerticalStackView(UIScreen.main.bounds.size)
         stackView.addArrangedSubview(explanation)

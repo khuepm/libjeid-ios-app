@@ -15,7 +15,7 @@ class PinStatusViewController: WrapperViewController, NFCTagReaderSessionDelegat
     var session: NFCTagReaderSession?
 
     override func loadView() {
-        self.title = "暗証番号ステータス"
+        self.title = "PIN Code Status"
         pinStatusView = PinStatusView()
         pinStatusView.startButton.addTarget(self, action: #selector(pushStartButton), for: .touchUpInside)
 
@@ -29,15 +29,16 @@ class PinStatusViewController: WrapperViewController, NFCTagReaderSessionDelegat
             activeField.resignFirstResponder()
         }
         if (!NFCReaderSession.readingAvailable) {
-            self.openAlertView("エラー", "お使いの端末はNFCに対応していません。")
+//            self.openAlertView("エラー", "お使いの端末はNFCに対応していません。")
+            self.openAlertView("Error", "Your device does not support NFC.")
             return
         }
         self.clearPublishedLog()
         if let _ = self.session {
-            publishLog("しばらく待ってから再度お試しください")
+            publishLog("Please wait a while and try again.")
         } else {
             self.session = NFCTagReaderSession(pollingOption: [.iso14443], delegate: self, queue: DispatchQueue.global())
-            self.session?.alertMessage = "カードに端末をかざしてください"
+            self.session?.alertMessage = "Please hold your card near the device."
             self.session?.begin()
             self.pinStatusView.startButton.alpha = Self.INACTIVE_ALPHA
         }
@@ -54,7 +55,7 @@ class PinStatusViewController: WrapperViewController, NFCTagReaderSessionDelegat
                 print("tagReaderSession error: " + nfcError.localizedDescription)
                 self.publishLog("エラー: " + nfcError.localizedDescription)
                 if nfcError.code == .readerSessionInvalidationErrorSessionTerminatedUnexpectedly {
-                    self.publishLog("しばらく待ってから再度お試しください")
+                    self.publishLog("Please wait a moment and try again.")
                 }
             }
         } else {
